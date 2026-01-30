@@ -1,93 +1,83 @@
-# proxmox-container
+# <img src="docs/proxmox.png" alt="proxmox" height="20"/> proxmox-container
 
 Moduł opentofu do zarządzanie kontenerami LXC (CT) w środowisku Proxmox VE.
 
-## Getting started
+<!-- BEGIN_TF_DOCS -->
+## Requirements
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.6.0 |
+| <a name="requirement_null"></a> [null](#requirement\_null) | ~> 3.2.4 |
+| <a name="requirement_proxmox"></a> [proxmox](#requirement\_proxmox) | ~> 0.87.0 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | ~> 3.7.2 |
+| <a name="requirement_tls"></a> [tls](#requirement\_tls) | ~> 4.0 |
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Providers
 
-## Add your files
+| Name | Version |
+|------|---------|
+| <a name="provider_null"></a> [null](#provider\_null) | ~> 3.2.4 |
+| <a name="provider_proxmox"></a> [proxmox](#provider\_proxmox) | ~> 0.87.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | ~> 3.7.2 |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | ~> 4.0 |
 
-* [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## Modules
 
-```
-cd existing_repo
-git remote add origin https://gitlab.com/pl.rachuna-net/artifacts/opentofu/proxmox-container.git
-git branch -M main
-git push -uf origin main
-```
+No modules.
 
-## Integrate with your tools
+## Resources
 
-* [Set up project integrations](https://gitlab.com/pl.rachuna-net/artifacts/opentofu/proxmox-container/-/settings/integrations)
+| Name | Type |
+|------|------|
+| [null_resource.post_create](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [proxmox_virtual_environment_container.container](https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/virtual_environment_container) | resource |
+| [proxmox_virtual_environment_pool_membership.vm_membership](https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/virtual_environment_pool_membership) | resource |
+| [random_password.vm](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
+| [tls_private_key.ssh](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
 
-## Collaborate with your team
+## Inputs
 
-* [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_cpu_cores"></a> [cpu\_cores](#input\_cpu\_cores) | The number of CPU cores to allocate to the container | `number` | `1` | no |
+| <a name="input_ct_id"></a> [ct\_id](#input\_ct\_id) | The ID of the VM | `number` | n/a | yes |
+| <a name="input_description"></a> [description](#input\_description) | The description of the container | `string` | `null` | no |
+| <a name="input_disk"></a> [disk](#input\_disk) | The disk configuration for the container | <pre>object({<br/>    storage_name = string<br/>    disk_size    = number<br/>  })</pre> | n/a | yes |
+| <a name="input_features"></a> [features](#input\_features) | LXC feature flags | <pre>object({<br/>    keyctl  = bool<br/>    nesting = bool<br/>    fuse    = optional(bool)<br/>    mount   = optional(list(string))<br/>  })</pre> | <pre>{<br/>  "fuse": false,<br/>  "keyctl": true,<br/>  "mount": [],<br/>  "nesting": true<br/>}</pre> | no |
+| <a name="input_hostname"></a> [hostname](#input\_hostname) | The hostname of the container | `string` | n/a | yes |
+| <a name="input_is_dmz"></a> [is\_dmz](#input\_is\_dmz) | Whether the container is in a DMZ (Demilitarized Zone) | `bool` | `false` | no |
+| <a name="input_mac_address"></a> [mac\_address](#input\_mac\_address) | The MAC address of the container's network interface | `string` | `null` | no |
+| <a name="input_memory"></a> [memory](#input\_memory) | The memory configuration for the container | <pre>object({<br/>    dedicated = number<br/>    swap      = number<br/>  })</pre> | <pre>{<br/>  "dedicated": 512,<br/>  "swap": 512<br/>}</pre> | no |
+| <a name="input_node_name"></a> [node\_name](#input\_node\_name) | The name of the node to create the container on | `string` | n/a | yes |
+| <a name="input_operating_system"></a> [operating\_system](#input\_operating\_system) | The operating system to install on the container | <pre>object({<br/>    template_file = string<br/>    type          = string<br/>  })</pre> | n/a | yes |
+| <a name="input_pool_id"></a> [pool\_id](#input\_pool\_id) | The name of the pool to create the container in | `string` | `null` | no |
+| <a name="input_protection"></a> [protection](#input\_protection) | Whether the container is protected from accidental deletion | `bool` | `false` | no |
+| <a name="input_start_on_boot"></a> [start\_on\_boot](#input\_start\_on\_boot) | The startup behavior of the container | `bool` | `false` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | The tags to assign to the container | `list(string)` | `[]` | no |
+| <a name="input_unprivileged"></a> [unprivileged](#input\_unprivileged) | Whether the container runs as unprivileged on the host | `bool` | `true` | no |
+| <a name="input_user_account"></a> [user\_account](#input\_user\_account) | Technical user created inside the container | <pre>object({<br/>    username       = string<br/>    password       = string<br/>    public_ssh_key = string<br/>  })</pre> | n/a | yes |
 
-## Test and Deploy
+## Outputs
 
-Use the built-in continuous integration in GitLab.
+| Name | Description |
+|------|-------------|
+| <a name="output_container_ipv4"></a> [container\_ipv4](#output\_container\_ipv4) | Primary IPv4 address of the container (eth0) |
+| <a name="output_root_password"></a> [root\_password](#output\_root\_password) | Generated root password for the container |
+| <a name="output_root_private_key"></a> [root\_private\_key](#output\_root\_private\_key) | Generated root private key (PEM) |
+| <a name="output_root_public_key"></a> [root\_public\_key](#output\_root\_public\_key) | Generated root public SSH key |
+<!-- END_TF_DOCS -->
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+---
+## Contributions
+Jeśli masz pomysły na ulepszenia, zgłoś problemy, rozwidl repozytorium lub utwórz Merge Request. Wszystkie wkłady są mile widziane!
+[Contributions](CONTRIBUTING.md)
 
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
+---
 ## License
-For open source projects, say how it is licensed.
+Projekt licencjonowany jest na warunkach [Licencji MIT](LICENSE).
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+---
+# Author Information
+### &emsp; Maciej Rachuna
+# <img src="docs/logo.png" alt="rachuna-net.pl" height="100"/>
